@@ -138,8 +138,7 @@ describe('Grid', () => {
             // Check that the token does not exist
             await expect(Grid.ownerOf(tokenId)).to.be.revertedWith("ERC721: owner query for nonexistent token")
             
-            // TODO: is this correct? (or is it 0xFFFFFF)
-            expect(await Grid.tokenURI(tokenId)).to.equal('FFFFFF')
+            expect(await Grid.tokenURI(tokenId)).to.equal('0xffffff')
         })
 
         it('returns the lowercase string representation of arbitrary hex codes', async () => { 
@@ -154,7 +153,9 @@ describe('Grid', () => {
                 const hexCode = hexCodes[i]
 
                 const nonZeroPaddedHexCode = await Grid.tokenURI(tokenId)
-                expect(ethers.utils.hexZeroPad(nonZeroPaddedHexCode, 3)).to.equal(hexCode.toLowerCase())
+                const zeroPaddedHexCode = ethers.utils.hexZeroPad(nonZeroPaddedHexCode, 3)
+                console.log(zeroPaddedHexCode)
+                expect(zeroPaddedHexCode).to.equal(hexCode.toLowerCase())
             }
         })
     })

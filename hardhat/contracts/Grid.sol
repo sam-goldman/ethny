@@ -97,7 +97,7 @@ contract Grid is ERC721Royalty, ReentrancyGuard, Ownable {
         override
         returns (string memory)
     {
-        return _exists(tokenId) ? Strings.toHexString(uint24(tokenIdValues[tokenId])) : 'FFFFFF';
+        return _exists(tokenId) ? Strings.toHexString(uint24(tokenIdValues[tokenId])) : '0xffffff';
     }
 
     function setTokenIdValues(uint256[] memory tokenIds, bytes3[] memory values) external {
