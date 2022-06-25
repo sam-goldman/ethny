@@ -626,6 +626,19 @@
   "resolved" "https://registry.npmjs.org/@humanwhocodes/object-schema/-/object-schema-1.2.1.tgz"
   "version" "1.2.1"
 
+"@irojs/iro-core@^1.2.1":
+  "integrity" "sha512-p2OvsBSSmidsDsTSkID6jEyXDF7lcyxPrkh3qBzasBZFpjkYd6kZ3yMWai3MlAaQ3F7li/Et7rSJVV09Fpei+A=="
+  "resolved" "https://registry.npmjs.org/@irojs/iro-core/-/iro-core-1.2.1.tgz"
+  "version" "1.2.1"
+
+"@jaames/iro@^5.5.2":
+  "integrity" "sha512-Fbi5U4Vdkw6UsF+R3oMlPONqkvUDMkwzh+mX718gQsDFt3+1r1jvGsrfCbedmXAAy0WsjDHOrefK0BkDk99TQg=="
+  "resolved" "https://registry.npmjs.org/@jaames/iro/-/iro-5.5.2.tgz"
+  "version" "5.5.2"
+  dependencies:
+    "@irojs/iro-core" "^1.2.1"
+    "preact" "^10.0.0"
+
 "@jridgewell/gen-mapping@^0.1.0":
   "integrity" "sha512-sQXCasFk+U8lWYEe66WxRDOE9PjVz4vSM51fTu3Hw+ClTpUSQb718772vH3pyS5pShp6lvQM7SxgIDXXXmOX7w=="
   "resolved" "https://registry.npmjs.org/@jridgewell/gen-mapping/-/gen-mapping-0.1.1.tgz"
@@ -3427,7 +3440,7 @@
     "picocolors" "^1.0.0"
     "source-map-js" "^1.0.1"
 
-"preact@^10.5.9":
+"preact@^10.0.0", "preact@^10.5.9":
   "integrity" "sha512-AKGt0BsDSiAYzVS78jZ9qRwuorY2CoSZtf1iOC6gLb/3QyZt+fLT09aYJBjRc/BEcRc4j+j3ggERMdNE43i1LQ=="
   "resolved" "https://registry.npmjs.org/preact/-/preact-10.8.2.tgz"
   "version" "10.8.2"
