@@ -104,7 +104,7 @@ contract Grid is ERC721, IERC2981, ReentrancyGuard, Ownable {
             _exists(tokenId) ? Strings.toString(tokenIdValues[tokenId]) : "255";
     }
 
-    function setTokenIdValues(uint256[] tokenIds, uint8[] values) external {
+    function setTokenIdValues(uint256[] memory tokenIds, uint8[] memory values) external {
         require(tokenIds.length == values.length, "Array lengths differ");
         
         for (uint i = 0; i < tokenIds.length; i++) {
