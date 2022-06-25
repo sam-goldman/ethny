@@ -47,25 +47,8 @@ contract Grid is ERC721, ReentrancyGuard, Ownable {
         }
     }
 
-    // // Same as the overridden 
-    // function _transfer(
-    //     address from,
-    //     address to,
-    //     uint256 tokenId
-    // ) internal override {
-
-    // }
-
-    //     function _transfer(
-    //     address from,
-    //     address to,
-    //     uint256 tokenId
-    // ) internal virtual
-
     // royalties
     // -royaltyinfo + setroyaltyies + supportsinterface (erc-2981)
-
-    // getter functions for mapping(s)
 
     // token uri should return rgb
 
