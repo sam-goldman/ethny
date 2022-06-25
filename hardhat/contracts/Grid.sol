@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import "./ERC721.sol";
 import '@openzeppelin/contracts/security/ReentrancyGuard.sol';
 import '@openzeppelin/contracts/access/Ownable.sol';
 
@@ -28,7 +28,7 @@ contract Grid is ERC721, ReentrancyGuard, Ownable {
         }
     }
 
-    function batchTransferFrom(uint256[] tokenIds) external payable nonReentrant {
+    function batchTransferFrom(uint256[] tokenIds) external payable {
         // Finds the total price associated with the token IDs
         uint256 currPrice;
         for (uint i = 0; i < tokenIds.length; i++) {
