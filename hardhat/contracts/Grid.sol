@@ -96,6 +96,16 @@ contract Grid is ERC721, IERC2981, ReentrancyGuard, Ownable {
             _exists(tokenId) ? Strings.toString(tokenIdValues[tokenId]) : "255";
     }
 
+    function setTokenIdValues(uint256[] tokenIds, uint8[] values) external {
+        require(tokenIds.length == values.length, "Array lengths differ");
+        
+        for (uint i = 0; i < tokenIds.length; i++) {
+            uint256 tokenId = tokenIds[i];
+            require(_owners[tokenId] == msg.sender, "Caller must be token ID owner");
+            tokenIdValues[tokenId] = values[i];
+        }
+    }
+
     // set a new royalty percentage
     function setRoyaltiesPercentage(uint256 newPercentage) public onlyOwner {
         royaltiesPercentage = newPercentage;
