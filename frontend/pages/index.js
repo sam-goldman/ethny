@@ -25,14 +25,37 @@ export default function Home() {
   };
 
   const loadPlots = () => {
+    try {
+      const { ethereum } = window;
+      if (ethereum) {
+        const provider = new ethers.providers.Web3Provider(ethereum);
+        const signer = provider.getSigner();
+        const contract = new ethers.Contract(contractAddress, contractABI, signer);
+
+        for (var i = 0; i < 100; i++) {
+          const loadColor = await contract.tokenIdValues(i);
+        }
+        console.log("Mining...", purchase.hash);
+
+        await purchase.wait();
+        console.log("Mined -- ", purchase.hash);
+
+      } else {
+        console.log("Ethereum object doesn't exist!");
+      }
+    } catch (error) {
+      console.log(error);
+    }
     for (var i = 0; i < 100; i++) {
       if(plotsPurchase.includes(i)){
         plots.push( <div key={i} class="box-content h-20 w-20 border-2 bg-gray-300"/>)
-      }
-      plots.push( <div key={i} class="box-content h-20 w-20 border-2 hover:bg-gray-300 cursor-pointer" onClick={() => {
+      } 
+      else {plots.push( <div key={i} class="box-content h-20 w-20 border-2 hover:bg-gray-300 cursor-pointer" onClick={() => {
         setPlotsPurchase(prevPlots => [...prevPlots, i]);
         console.log(plotsPurchase);
-      }}></div>); // TODO render rgb value per plot
+      }}></div>)
+      }
+       // TODO render rgb value per plot
     }
   }
 
