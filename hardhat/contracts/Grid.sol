@@ -14,15 +14,10 @@ contract Grid is ERC721, IERC2981, ReentrancyGuard, Ownable {
 
     uint256 public counter;
 
-<<<<<<< HEAD
     address payable royaltyReceiver;
 
-    // royaltiesPercentage by default is 10%.
-    uint256 public royaltiesPercentage = 10;
-=======
     // royaltiesPercentage by default is 5%.
     uint256 public royaltiesPercentage = 500; // 500 bps
->>>>>>> origin/corben
 
     // Mapping from token ID to RGB value
     mapping(uint256 => uint8) public tokenIdValues;
