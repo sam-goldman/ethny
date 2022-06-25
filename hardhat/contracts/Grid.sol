@@ -2,15 +2,16 @@
 pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import '@openzeppelin/contracts/security/ReentrancyGuard.sol';
 
-contract Grid is ERC721 {
+contract Grid is ERC721, ReentrancyGuard {
     // public constant TOTAL_SUPPLY = ;
 
     mapping(uint256 => uint8) _tokenIds;
 
     // mapping: tokenId => current price
 
-    constructor() ERC721("Grid", "GRD") {}
+    constructor(uint256 _maxSupply) ERC721("Grid", "GRD") {}
 
     // include events on minting and transfers
 
@@ -19,7 +20,18 @@ contract Grid is ERC721 {
 
     // batch minting:
     // -payable with either eth or op token?
-    // -
+
+    modifier mintCompliance(uint256 _mintAmount) {
+        require(_mintAmount > 0, 'Invalid mint amount!');
+        require(totalSupply() + _mintAmount <= maxSupply, 'Max supply exceeded!');
+        _;
+    }
+
+    function batchMint(uint256[] indexes ) public payable mintCompliance(indexes.length) {
+        for(uint256 i=0; i <= indexes.length; ++i){
+            _safeMint(_msgSender(), _mintAmount);
+        }
+    }
 
     // royalties
     // -royaltyinfo + setroyaltyies + supportsinterface (erc-2981)
@@ -29,5 +41,7 @@ contract Grid is ERC721 {
     // token uri should return rgb
 
     // withdraw function
+
+    // bidding mechanism
 
 }
