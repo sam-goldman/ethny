@@ -97,10 +97,15 @@ contract Grid is ERC721Royalty, ReentrancyGuard, Ownable {
         override
         returns (string memory)
     {
-        return _exists(tokenId) ? Strings.toHexString(uint24(tokenIdValues[tokenId])) : '0xffffff';
+        return
+            _exists(tokenId)
+                ? Strings.toHexString(uint24(tokenIdValues[tokenId]))
+                : "0xffffff";
     }
 
-    function setTokenIdValues(uint256[] memory tokenIds, bytes3[] memory values) external {
+    function setTokenIdValues(uint256[] memory tokenIds, bytes3[] memory values)
+        external
+    {
         require(tokenIds.length == values.length, "Array lengths differ");
 
         for (uint i = 0; i < tokenIds.length; i++) {
@@ -132,6 +137,9 @@ contract Grid is ERC721Royalty, ReentrancyGuard, Ownable {
     // withdraw function
     function withdraw() public onlyOwner {
         require(address(this).balance > 0, "Balance is 0");
-        payable(owner()).transfer(address(this).balance);
+        (bool success, ) = payable(owner()).call.value(address(this).balance)(
+            ""
+        );
+        require(success, "Withdraw failed");
     }
 }
