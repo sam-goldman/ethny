@@ -10,6 +10,8 @@ contract Grid is ERC721, IERC2981, ReentrancyGuard, Ownable {
     // public constant TOTAL_SUPPLY = ;
 
     mapping(uint256 => uint8) _tokenIds;
+    
+    // royaltiesPercentage by default is 10%.
     uint256 public royaltiesPercentage = 10;
 
     // mapping: tokenId => current price
