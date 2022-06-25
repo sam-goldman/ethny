@@ -66,16 +66,24 @@ describe('Grid', () => {
 
     describe('batchTransferFrom', () => {
         beforeEach('mint tokens', async () => {
-            // Alice mints four token IDs and pays 1 eth
+            // Alice mints four token IDs and sends eth to the contract
             await Grid.batchMint(
-                [1, 4, 1234, 9876],
-                { value: ethers.utils.parseEther('1') }
+                tokenIds,
+                { value: price }
             )
         })
 
-        it('reverts if msg value is equal to the current price')
+        
+        it('reverts if transaction eth amount does not exceed the current price of the token IDs', async () => {
+            // Bob attempts to purchase Alice's tokens at the same price she bought them
+            await expect(
+                Grid.connect(bob).batchTransferFrom(tokenIds, {value: price})
+            ).to.be.revertedWith("Insufficient payment")
+        })
 
-        it('transfers token ids to new owner and increments prices')
+        it('transfers token ids to new owner and increments prices', async () => {
+            
+        })
     })
 
     // TODO: better maths

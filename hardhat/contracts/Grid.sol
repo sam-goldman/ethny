@@ -11,6 +11,7 @@ import "@openzeppelin/contracts/utils/Strings.sol";
 
 contract Grid is ERC721, IERC2981, ReentrancyGuard, Ownable {
     uint256 public immutable MAX_SUPPLY;
+    uint8 public constant BASIS_POINTS = 10000;
 
     uint256 public counter;
 
@@ -52,22 +53,29 @@ contract Grid is ERC721, IERC2981, ReentrancyGuard, Ownable {
         }
     }
 
-    function batchTransferFrom(uint256[] memory tokenIds) external payable {
-        // Finds the total price associated with the token IDs
-        uint256 currPrice;
+    function batchTransferFrom(uint256[] memory tokenIds, address to) external payable nonReentrant {
+        // Gets the total price associated with the token IDs
+        uint256 prevPrice;
         for (uint i = 0; i < tokenIds.length; i++) {
             uint256 tokenId = tokenIds[i];
-            currPrice += prices[tokenId];
+            prevPrice += prices[tokenId];
         }
 
-        require(msg.value > currPrice, "Insufficient payment");
+        require(msg.value > prevPrice, "Insufficient payment");
 
         // Increments the price of each token ID and transfers tokens to new owner
         uint256 amountPerTokenId = msg.value / tokenIds.length;
         for (uint i = 0; i < tokenIds.length; i++) {
+            // Pays the current owner their portion of the transaction.
             uint256 tokenId = tokenIds[i];
+            address prevOwner = _owners[tokenId];
+            uint256 prevOwnerPayment = (10000 - )
+            (bool success, ) = payable(prevOwner).call{value: remainingMsgValue}("");
+            require(success, "Failed to pay previous owner.");
+
+            // Transfers token to the new owner
             prices[tokenId] += amountPerTokenId;
-            _transfer(_owners[tokenId], msg.sender, tokenId);
+            _transfer(_owners[tokenId], to, tokenId);
         }
     }
 
