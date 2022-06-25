@@ -8,19 +8,13 @@ import '@openzeppelin/contracts/access/Ownable.sol';
 contract Grid is ERC721, ReentrancyGuard, Ownable {
     // public constant TOTAL_SUPPLY = ;
 
-    mapping(uint256 => uint8) _tokenIds;
+    // Mapping from token ID to RGB value
+    mapping(uint256 => uint8) public tokenIdValues;
 
-    // mapping: tokenId => current price
+    // Mapping from token ID to current price
+    mapping(uint256 => uint256) public prices;
 
     constructor(uint256 _maxSupply) ERC721("Grid", "GRD") {}
-
-    // include events on minting and transfers
-
-    // batch transfers:
-    // -
-
-    // batch minting:
-    // -payable with either eth or op token?
 
     modifier mintCompliance(uint256 _mintAmount) {
         require(_mintAmount > 0, 'Invalid mint amount!');
@@ -33,6 +27,40 @@ contract Grid is ERC721, ReentrancyGuard, Ownable {
             _safeMint(_msgSender(), _mintAmount);
         }
     }
+
+    function batchTransferFrom(uint256[] tokenIds) external payable nonReentrant {
+        // Finds the total price associated with the token IDs
+        uint256 currPrice;
+        for (uint i = 0; i < tokenIds.length; i++) {
+            uint256 tokenId = tokenIds[i];
+            currPrice += prices[tokenId];
+        }
+
+        require(msg.value > currPrice, "Insufficient payment");
+
+        // Increments the price of each token ID and transfers tokens to new owner
+        uint256 amountPerToken = msg.value / tokenIds.length;
+        for (uint i = 0; i < tokenIds.length; i++) {
+            uint256 tokenId = tokenIds[i];
+            prices[tokenId] += amountPerToken;
+            _transfer(_owners[tokenId], msg.sender, tokenId);
+        }
+    }
+
+    // // Same as the overridden 
+    // function _transfer(
+    //     address from,
+    //     address to,
+    //     uint256 tokenId
+    // ) internal override {
+
+    // }
+
+    //     function _transfer(
+    //     address from,
+    //     address to,
+    //     uint256 tokenId
+    // ) internal virtual
 
     // royalties
     // -royaltyinfo + setroyaltyies + supportsinterface (erc-2981)
