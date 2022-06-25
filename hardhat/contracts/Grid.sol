@@ -16,7 +16,7 @@ contract Grid is ERC721Royalty, ReentrancyGuard, Ownable {
     uint256 public royaltiesPercentage = 500; // 500 bps
 
     // Mapping from token ID to RGB value in hex format
-    mapping(uint256 => bytes6) public tokenIdValues;
+    mapping(uint256 => bytes3) public tokenIdValues;
 
     // Mapping from token ID to current price
     mapping(uint256 => uint256) public prices;
@@ -94,11 +94,10 @@ contract Grid is ERC721Royalty, ReentrancyGuard, Ownable {
         override
         returns (string memory)
     {
-        // TODO: is this necessary?
-        return _exists(tokenId) ? Strings.toHexString(uint48(tokenIdValues[tokenId])) : 'FFFFFF';
+        return _exists(tokenId) ? Strings.toHexString(uint24(tokenIdValues[tokenId])) : 'FFFFFF';
     }
 
-    function setTokenIdValues(uint256[] memory tokenIds, bytes6[] memory values) external {
+    function setTokenIdValues(uint256[] memory tokenIds, bytes3[] memory values) external {
         require(tokenIds.length == values.length, "Array lengths differ");
         
         for (uint i = 0; i < tokenIds.length; i++) {

@@ -8,7 +8,7 @@ const BASIS_POINTS = 10_000;
 
 describe('Grid', () => {
     let tokenIds = [1, 2, 3, 4, 9999]
-    let hexCodes = ['0000FF', '000000', '89CFF0', 'b0c4de', 'FFFFFF']
+    let hexCodes = ['0x89CFF0', '0xb0c4de', '0xFFFFFF', '0x0000ff', '0x000000']
     let price = ethers.utils.parseEther('1')
 
     let alice, bob
@@ -138,15 +138,23 @@ describe('Grid', () => {
             // Check that the token does not exist
             await expect(Grid.ownerOf(tokenId)).to.be.revertedWith("ERC721: owner query for nonexistent token")
             
+            // TODO: is this correct? (or is it 0xFFFFFF)
             expect(await Grid.tokenURI(tokenId)).to.equal('FFFFFF')
         })
 
-        it('returns the string representation of arbitrary hex codes', async () => {            
+        it('returns the lowercase string representation of arbitrary hex codes', async () => { 
+            // Alice mints tokens
+            await Grid.batchMint(tokenIds)
+            
             // Set the hex value for Alice's tokens
             await Grid.setTokenIdValues(tokenIds, hexCodes)
 
-            for (const tokenId of tokenIds) {
-                expect(await Grid.tokenURI(tokenId)).to.equal
+            for (var i = 0; i < tokenIds.length; i++) {
+                const tokenId = tokenIds[i]
+                const hexCode = hexCodes[i]
+
+                const nonZeroPaddedHexCode = await Grid.tokenURI(tokenId)
+                expect(ethers.utils.hexZeroPad(nonZeroPaddedHexCode, 3)).to.equal(hexCode.toLowerCase())
             }
         })
     })
