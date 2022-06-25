@@ -113,17 +113,27 @@ describe('Grid', () => {
     })
 
     describe('supportsInterface', async () => {
-        it('supports erc721')
+        it('supports erc721 interface', async () => {
+            expect(await Grid.supportsInterface('0x80ac58cd')).to.equal(true)
+        })
 
-        it('supports erc165')
+        it('supports erc165 interface', async () => {
+            expect(await Grid.supportsInterface('0x01ffc9a7')).to.equal(true)
+        })
 
-        it('supports erc2981')
+        it('supports erc2981 interface', async () => {
+            expect(await Grid.supportsInterface('0x2a55205a')).to.equal(true)
+        })
 
-        it('does not support incorrect interface')
+        it('does not support incorrect interface', async () => {
+            expect(await Grid.supportsInterface('0xffffffff')).to.equal(false)
+        })
     })
 
     describe('tokenURI', async () => {
-        it('returns the white hex value for a non-existent token')
+        it('returns the white hex value for a non-existent token', async () => {
+            
+        })
 
         it('returns the string representation of an arbitrary hex value')
     })

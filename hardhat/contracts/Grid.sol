@@ -1,13 +1,12 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import "./ERC721.sol";
+import "./ERC721Royalty.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/interfaces/IERC2981.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
 
-contract Grid is ERC721, IERC2981, ReentrancyGuard, Ownable {
+contract Grid is ERC721Royalty, ReentrancyGuard, Ownable {
     uint16 public constant BASIS_POINTS = 10000;
     uint256 public immutable MAX_SUPPLY;
 
@@ -79,7 +78,7 @@ contract Grid is ERC721, IERC2981, ReentrancyGuard, Ownable {
     function supportsInterface(bytes4 interfaceId)
         public
         view
-        override(ERC721, IERC165)
+        override
         returns (bool)
     {
         return super.supportsInterface(interfaceId);
@@ -115,9 +114,9 @@ contract Grid is ERC721, IERC2981, ReentrancyGuard, Ownable {
     }
 
     function royaltyInfo(uint256, uint256 _salePrice)
-        external
+        public
         view
-        override(IERC2981)
+        override
         returns (address receiver, uint256 royaltyAmount)
     {
         royaltyAmount = ((_salePrice * royaltiesPercentage) / 10000);
