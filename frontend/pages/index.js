@@ -18,6 +18,7 @@ export default function Home() {
   });
   const [color, setColor] = useState("#fff");
   const [plotsPurchase, setPlotsPurchase] = useState([])
+  const [contract, setContract] = useState()
   // const [plots, setPlots{purchased:"false"}] = useState([])
   const handleChangeComplete = (myColor) => {
     setColor({ background: myColor.hex });
@@ -78,8 +79,7 @@ export default function Home() {
       const { ethereum } = window;
       if (ethereum) {
         const provider = new ethers.providers.Web3Provider(ethereum);
-        const signer = provider.getSigner();
-        const contract = new ethers.Contract(contractAddress, contractABI, signer);
+        const signer = await provider.getSigner();
 
         const purchase = await contract.batchMint(plotsPurchase);
         console.log("Mining...", purchase.hash);

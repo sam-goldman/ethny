@@ -15,6 +15,7 @@ contract Grid is ERC721Royalty, ReentrancyGuard, Ownable {
     // royaltiesPercentage by default is 5%.
     uint256 public royaltiesPercentage = 500; // 500 bps
 
+    // TODO: change name?
     // Mapping from token ID to RGB value in hex format
     mapping(uint256 => bytes3) public tokenIdValues;
 
