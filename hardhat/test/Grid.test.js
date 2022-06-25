@@ -23,12 +23,12 @@ describe('Grid', () => {
     // TODO: johans?
     describe('batchMint')
 
-    describe('batchTransferFrom', () => {       
+    describe('batchTransferFrom', () => {
         beforeEach('mint tokens', async () => {
             // Alice mints four token
             await Grid.
         })
-        
+
         it('reverts if msg value is equal to the current price')
 
         it('transfers token ids to new owner and increments prices')
