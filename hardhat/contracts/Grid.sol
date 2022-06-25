@@ -11,7 +11,7 @@ contract Grid is ERC721Royalty, ReentrancyGuard, Ownable {
     uint256 public immutable MAX_SUPPLY;
 
     uint256 public counter;
-    
+
     // royaltiesPercentage by default is 5%.
     uint256 public royaltiesPercentage = 500; // 500 bps
 
@@ -26,11 +26,7 @@ contract Grid is ERC721Royalty, ReentrancyGuard, Ownable {
         MAX_SUPPLY = _maxSupply;
     }
 
-    function batchMint(uint256[] memory tokenIds)
-        public
-        payable
-        nonReentrant
-    {
+    function batchMint(uint256[] memory tokenIds) public payable nonReentrant {
         require(tokenIds.length > 0, "Cannot mint zero NFTs");
         require(counter + tokenIds.length <= MAX_SUPPLY, "Max supply exceeded");
 
@@ -46,7 +42,11 @@ contract Grid is ERC721Royalty, ReentrancyGuard, Ownable {
         }
     }
 
-    function batchTransferFrom(uint256[] memory tokenIds, address to) external payable nonReentrant {
+    function batchTransferFrom(uint256[] memory tokenIds, address to)
+        external
+        payable
+        nonReentrant
+    {
         // Gets the total price associated with the token IDs
         uint256 prevPrice;
         for (uint i = 0; i < tokenIds.length; i++) {
@@ -61,10 +61,13 @@ contract Grid is ERC721Royalty, ReentrancyGuard, Ownable {
         for (uint i = 0; i < tokenIds.length; i++) {
             uint256 tokenId = tokenIds[i];
             address prevOwner = _owners[tokenId];
-            
+
             // Pays the previous owner their portion of the transaction.
-            uint256 prevOwnerPayment = (BASIS_POINTS - royaltiesPercentage) * amountPerTokenId / BASIS_POINTS;
-            (bool success, ) = payable(prevOwner).call{value: prevOwnerPayment}("");
+            uint256 prevOwnerPayment = ((BASIS_POINTS - royaltiesPercentage) *
+                amountPerTokenId) / BASIS_POINTS;
+            (bool success, ) = payable(prevOwner).call{value: prevOwnerPayment}(
+                ""
+            );
             require(success, "Failed to pay previous owner.");
 
             // Transfers token to the new owner
@@ -99,10 +102,13 @@ contract Grid is ERC721Royalty, ReentrancyGuard, Ownable {
 
     function setTokenIdValues(uint256[] memory tokenIds, bytes3[] memory values) external {
         require(tokenIds.length == values.length, "Array lengths differ");
-        
+
         for (uint i = 0; i < tokenIds.length; i++) {
             uint256 tokenId = tokenIds[i];
-            require(_owners[tokenId] == msg.sender, "Caller must be token ID owner");
+            require(
+                _owners[tokenId] == msg.sender,
+                "Caller must be token ID owner"
+            );
             tokenIdValues[tokenId] = values[i];
         }
     }

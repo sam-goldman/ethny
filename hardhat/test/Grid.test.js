@@ -8,7 +8,7 @@ const BASIS_POINTS = 10_000;
 
 describe('Grid', () => {
     let tokenIds = [1, 2, 3, 4, 9999]
-    let hexCodes = ['0x89CFF0', '0xb0c4de', '0xFFFFFF', '0x0000ff', '0x000000']
+    let hexCodes = ['0x0000FF', '0x000000', '0x89CFF0', '0xb0c4de', '0xFFFFFF']
     let price = ethers.utils.parseEther('1')
 
     let alice, bob
@@ -51,7 +51,7 @@ describe('Grid', () => {
         })
 
         it('mints token ids and updates prices', async () => {
-            await Grid.batchMint(tokenIds, { value: price})
+            await Grid.batchMint(tokenIds, { value: price })
 
             const pricePerToken = price.div(tokenIds.length)
             for (const tokenId of tokenIds) {
@@ -61,7 +61,7 @@ describe('Grid', () => {
                 // Updates price mapping for each token
                 expect(await Grid.prices(tokenId)).to.equal(pricePerToken)
             }
-            
+
             // Increments counter
             expect(await Grid.counter()).to.equal(tokenIds.length)
 
@@ -78,11 +78,11 @@ describe('Grid', () => {
                 { value: price }
             )
         })
-        
+
         it('reverts if transaction eth amount does not exceed the current price of the token IDs', async () => {
             // Bob attempts to purchase Alice's tokens at the same price she bought them
             await expect(
-                Grid.connect(bob).batchTransferFrom(tokenIds, bob.address, {value: price})
+                Grid.connect(bob).batchTransferFrom(tokenIds, bob.address, { value: price })
             ).to.be.revertedWith("Insufficient payment")
         })
 
@@ -94,7 +94,7 @@ describe('Grid', () => {
             // Bob buys Alice's tokens at twice the price
             const bobPayment = price.mul(2)
             const response = await Grid.connect(bob).batchTransferFrom(tokenIds, bob.address, { value: bobPayment })
-            
+
             // Keeps 5% of Bob's ETH payment in the contract for the royalty receiver
             expect(await provider.getBalance(Grid.address)).to.equal(prevGridBalance.add(ethers.utils.parseEther('0.1')))
 
@@ -106,7 +106,7 @@ describe('Grid', () => {
             for (const tokenId of tokenIds) {
                 // Updates prices mapping
                 expect(await Grid.prices(tokenId)).to.equal(newPricePerToken)
-                
+
                 // Transfers tokens to Bob
                 expect(await Grid.ownerOf(tokenId)).to.equal(bob.address)
             }
@@ -131,7 +131,7 @@ describe('Grid', () => {
         })
     })
 
-    describe.only('tokenURI', async () => {
+    describe('tokenURI', async () => {
         it('returns the white hex value for a non-existent token', async () => {
             const tokenId = 888
 
@@ -160,11 +160,33 @@ describe('Grid', () => {
     })
 
     describe('setTokenIdValues', async () => {
-        it('reverts if array lengths differ')
+        beforeEach('mint tokens', async () => {
+            // Alice mints four token IDs and sends eth to the contract
+            await Grid.batchMint(
+                tokenIds,
+                { value: price }
+            )
+        })
 
-        it('reverts if called by non-owner')
+        it('reverts if array lengths differ', async () => {
+            await expect(Grid.setTokenIdValues([1, 2, 3, 4], hexCodes)).to.be.revertedWith('Array lengths differ')
+        })
 
-        it('sets token ids to their hex value')
+        it('reverts if called by non-owner', async () => {
+            // bob tries to set alice's token value. not cool bob.
+            await expect(Grid.connect(bob).setTokenIdValues([1], [hexCodes[0]])).to.be.revertedWith('Caller must be token ID owner');
+        })
+
+        it('sets token ids to their hex value', async () => {
+            // should succeed
+            await expect(Grid.setTokenIdValues(tokenIds, hexCodes)).to.not.be.reverted
+            // Checks all token values were set
+            let i = 0;
+            for (const tokenId of tokenIds) {
+                expect(await Grid.tokenIdValues(tokenId)).to.equal(hexCodes[i].toLowerCase())
+                i++;
+            }
+        })
     })
 
     // TODO: better maths
