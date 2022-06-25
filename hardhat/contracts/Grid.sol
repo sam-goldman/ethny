@@ -12,8 +12,8 @@ contract Grid is ERC721, IERC2981, ReentrancyGuard, Ownable {
 
     uint256 public counter;
 
-    // royaltiesPercentage by default is 10%.
-    uint256 public royaltiesPercentage = 10;
+    // royaltiesPercentage by default is 5%.
+    uint256 public royaltiesPercentage = 500; // 500 bps
 
     // Mapping from token ID to RGB value
     mapping(uint256 => uint8) public tokenIdValues;
@@ -99,14 +99,15 @@ contract Grid is ERC721, IERC2981, ReentrancyGuard, Ownable {
         royaltiesPercentage = newPercentage;
     }
 
-    function royaltyInfo(uint256 tokenId, uint256 _salePrice)
+    function royaltyInfo(uint256, uint256 _salePrice)
         external
         view
         override(IERC2981)
         returns (address receiver, uint256 royaltyAmount)
     {
-        uint256 _royalties = ((_salePrice * royaltiesPercentage) / 100);
-        return (owner(), _royalties);
+        royaltyAmount = ((_salePrice * royaltiesPercentage) / 10000);
+
+        return (owner(), royaltyAmount);
     }
 
     // withdraw function
