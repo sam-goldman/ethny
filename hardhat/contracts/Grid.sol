@@ -7,10 +7,9 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/interfaces/IERC2981.sol";
 
 contract Grid is ERC721, IERC2981, ReentrancyGuard, Ownable {
-    // public constant TOTAL_SUPPLY = ;
+    uint256 public constant TOTAL_SUPPLY = 10000;
 
-    // TODO: figure out what we want maxSupply to be.
-    uint256 public constant maxSupply = 10000;
+    uint256 public totalSupply;
 
     // royaltiesPercentage by default is 10%.
     uint256 public royaltiesPercentage = 10;
@@ -21,18 +20,20 @@ contract Grid is ERC721, IERC2981, ReentrancyGuard, Ownable {
     // Mapping from token ID to current price
     mapping(uint256 => uint256) public prices;
 
-    constructor(uint256 _maxSupply) ERC721("Grid", "GRD") {
+    constructor() ERC721("Grid", "GRD") {
     }
 
     modifier mintCompliance(uint256 _mintAmount) {
         require(_mintAmount > 0, 'Invalid mint amount!');
-        require(super.totalSupply() + _mintAmount <= maxSupply, 'Max supply exceeded!');
+        require(totalSupply + _mintAmount <= maxSupply, 'Max supply exceeded!');
         _;
     }
 
-    function batchMint(uint256[] indexes ) public payable mintCompliance(indexes.length) {
+    function batchMint(uint256[] memory indexes) public payable nonReentrant mintCompliance(indexes.length) {
         for(uint256 i=0; i <= indexes.length; ++i){
-            _safeMint(_msgSender(), _mintAmount);
+            uint256 index = indexes[i];
+            totalSupply += 1;
+            _safeMint(_msgSender(), totalSupply);
         }
     }
 
