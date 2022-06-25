@@ -154,7 +154,6 @@ describe('Grid', () => {
 
                 const nonZeroPaddedHexCode = await Grid.tokenURI(tokenId)
                 const zeroPaddedHexCode = ethers.utils.hexZeroPad(nonZeroPaddedHexCode, 3)
-                console.log(zeroPaddedHexCode)
                 expect(zeroPaddedHexCode).to.equal(hexCode.toLowerCase())
             }
         })

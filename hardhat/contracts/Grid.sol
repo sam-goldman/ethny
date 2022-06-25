@@ -137,7 +137,7 @@ contract Grid is ERC721Royalty, ReentrancyGuard, Ownable {
     // withdraw function
     function withdraw() public onlyOwner {
         require(address(this).balance > 0, "Balance is 0");
-        (bool success, ) = payable(owner()).call.value(address(this).balance)(
+        (bool success, ) = payable(owner()).call{value: address(this).balance }(
             ""
         );
         require(success, "Withdraw failed");
