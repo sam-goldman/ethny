@@ -35,10 +35,6 @@ contract Grid is ERC721, IERC2981, ReentrancyGuard, Ownable {
             _safeMint(_msgSender(), _mintAmount);
         }
     }
-    // getter functions for mapping(s)
-
-    // token uri should return rgb
-
 
     function batchTransferFrom(uint256[] tokenIds) external payable {
         // Finds the total price associated with the token IDs
@@ -72,7 +68,8 @@ contract Grid is ERC721, IERC2981, ReentrancyGuard, Ownable {
      */
     function tokenURI(uint256 tokenId) public view override returns (string memory) {
         return _exists(tokenId) ? (tokenIdValues[tokenId]).toString() : "255";
-        
+    }
+
     // set a new royalty percentage
     function setRoyaltiesPercentage(uint256 newPercentage) public onlyOwner {
         royaltiesPercentage = newPercentage;
