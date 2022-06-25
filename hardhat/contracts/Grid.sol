@@ -50,7 +50,14 @@ contract Grid is ERC721, ReentrancyGuard, Ownable {
     // royalties
     // -royaltyinfo + setroyaltyies + supportsinterface (erc-2981)
 
-    // token uri should return rgb
+
+    /**
+     * Returns the RGB value of the token as a string. The default RGB value for tokens
+     * that don't exist is 255 (i.e. white).
+     */
+    function tokenURI(uint256 tokenId) public view override returns (string memory) {
+        return _exists(tokenId) ? (tokenIdValues[tokenId]).toString() : "255";
+    }
 
     // withdraw function
     function withdraw() public onlyOwner {
