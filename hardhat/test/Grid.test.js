@@ -112,6 +112,30 @@ describe('Grid', () => {
         })
     })
 
+    describe('supportsInterface', async () => {
+        it('supports erc721')
+
+        it('supports erc165')
+
+        it('supports erc2981')
+
+        it('does not support incorrect interface')
+    })
+
+    describe('tokenURI', async () => {
+        it('returns the white hex value for a non-existent token')
+
+        it('returns the string representation of an arbitrary hex value')
+    })
+
+    describe('setTokenIdValues', async () => {
+        it('reverts if array lengths differ')
+
+        it('reverts if called by non-owner')
+
+        it('sets token ids to their hex value')
+    })
+
     // TODO: better maths
     describe('royaltyInfo', async () => {
         it('calculates correct royalty info', async () => {

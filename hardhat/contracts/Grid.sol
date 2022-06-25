@@ -130,6 +130,4 @@ contract Grid is ERC721, IERC2981, ReentrancyGuard, Ownable {
         require(address(this).balance > 0, "Balance is 0");
         payable(owner()).transfer(address(this).balance);
     }
-
-    // bidding mechanism
 }
