@@ -3,8 +3,9 @@ pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import '@openzeppelin/contracts/security/ReentrancyGuard.sol';
+import '@openzeppelin/contracts/access/Ownable.sol';
 
-contract Grid is ERC721, ReentrancyGuard {
+contract Grid is ERC721, ReentrancyGuard, Ownable {
     // public constant TOTAL_SUPPLY = ;
 
     mapping(uint256 => uint8) _tokenIds;
@@ -41,6 +42,10 @@ contract Grid is ERC721, ReentrancyGuard {
     // token uri should return rgb
 
     // withdraw function
+    function withdraw() public onlyOwner {
+        require(address(this).balance > 0, "Balance is 0");
+        payable(owner()).address(this).balance;
+    }
 
     // bidding mechanism
 
