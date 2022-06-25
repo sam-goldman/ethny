@@ -1,65 +1,49 @@
 import Head from 'next/head'
 import Image from 'next/image'
 import styles from '../styles/Home.module.css'
-import Header from '../components/header'
-
+import {useState, useEffect} from 'react';
+import { ConnectButton } from '@rainbow-me/rainbowkit';
 
 export default function Home() {
+
+  useEffect(() => {
+    //@TODO: call rgb value per plot/ values per plot
+  });
+
+
+  const [plotsPurchase, setPlotsPurchase] = useState([])
+
+  var plots = [];
+
+  const purchase = () => {
+
+  }
+
+
+  for (var i = 0; i <= 1000; i++) {
+      plots.push( <div key={i} class="box-content h-20 w-20 border-2 ..." onClick={() => setPlotsPurchase(prevPlots => [...prevPlots, i])}/>); // TODO render rgb value per plot
+  }
+
   return (
-    
-    <div className={styles.container}>
-      <Header />
-
-      <main className={styles.main}>
-        <h1 className={styles.title}>
-          Welcome to <a href="https://nextjs.org">Next.js!</a>
-        </h1>
-
-        
-
-        <div className={styles.grid}>
-          <a href="https://nextjs.org/docs" className={styles.card}>
-            <h2>Documentation &rarr;</h2>
-            <p>Find in-depth information about Next.js features and API.</p>
-          </a>
-
-          <a href="https://nextjs.org/learn" className={styles.card}>
-            <h2>Learn &rarr;</h2>
-            <p>Learn about Next.js in an interactive course with quizzes!</p>
-          </a>
-
-          <a
-            href="https://github.com/vercel/next.js/tree/canary/examples"
-            className={styles.card}
-          >
-            <h2>Examples &rarr;</h2>
-            <p>Discover and deploy boilerplate example Next.js projects.</p>
-          </a>
-
-          <a
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-          >
-            <h2>Deploy &rarr;</h2>
-            <p>
-              Instantly deploy your Next.js site to a public URL with Vercel.
-            </p>
-          </a>
+    <>
+      <div className="min-w-screen min-h-screen flex justify-center p-10">
+        <div className="px-4" style={{ maxWidth: '1600px' }}>     
+         <div className="flex flex-row justify-between">
+        <span class="text-red-500 text-2xl mb-4 font-bold px-2...">
+            the bazillion<br/>
+            dollar homepage
+        </span>        
+        <ConnectButton class="py-2"/>
         </div>
-      </main>
+          <button onClick={purchase} className="font-bold mt-4 bg-red-500 text-white rounded p-4 shadow-lg hover:bg-gray-700">
+            purchase!
+          </button>
+          <div class="grid grid-cols-10 gap-0 py-10">
+            {plots}
+          </div>
+        </div>
+      </div>
+    </>
 
-      <footer className={styles.footer}>
-        <a
-          href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Powered by{' '}
-          <span className={styles.logo}>
-            <Image src="/vercel.svg" alt="Vercel Logo" width={72} height={16} />
-          </span>
-        </a>
-      </footer>
-    </div>
   )
 }
