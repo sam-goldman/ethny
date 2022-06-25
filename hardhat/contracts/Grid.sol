@@ -29,16 +29,24 @@ contract Grid is ERC721, IERC2981, ReentrancyGuard, Ownable {
         _;
     }
 
-    function batchMint(uint256[] memory indexes)
+    function batchMint(uint256[] memory tokenIds)
         public
         payable
         nonReentrant
-        mintCompliance(indexes.length)
+        mintCompliance(tokenIds.length)
     {
-        for (uint256 i = 0; i <= indexes.length; ++i) {
-            uint256 index = indexes[i];
+        for (uint256 i = 0; i <= tokenIds.length; ++i) {
+            uint256 tokenId = tokenIds[i];
             counter += 1;
-            _safeMint(_msgSender(), index);
+            _safeMint(_msgSender(), tokenId);
+        }
+
+        if (msg.value > 0) {
+            uint256 amountPerTokenId = msg.value / tokenIds.length;
+            for (uint256 i = 0; i < tokenIds.length; i++) {
+                uint256 tokenId = tokenIds[i];
+                prices[tokenId] += amountPerTokenId;
+            }
         }
     }
 
@@ -53,10 +61,10 @@ contract Grid is ERC721, IERC2981, ReentrancyGuard, Ownable {
         require(msg.value > currPrice, "Insufficient payment");
 
         // Increments the price of each token ID and transfers tokens to new owner
-        uint256 amountPerToken = msg.value / tokenIds.length;
+        uint256 amountPerTokenId = msg.value / tokenIds.length;
         for (uint i = 0; i < tokenIds.length; i++) {
             uint256 tokenId = tokenIds[i];
-            prices[tokenId] += amountPerToken;
+            prices[tokenId] += amountPerTokenId;
             _transfer(_owners[tokenId], msg.sender, tokenId);
         }
     }
