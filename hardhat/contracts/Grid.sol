@@ -2,11 +2,18 @@
 pragma solidity ^0.8.0;
 
 import "./ERC721.sol";
-import '@openzeppelin/contracts/security/ReentrancyGuard.sol';
-import '@openzeppelin/contracts/access/Ownable.sol';
+import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/interfaces/IERC2981.sol";
 
-contract Grid is ERC721, ReentrancyGuard, Ownable {
+contract Grid is ERC721, IERC2981, ReentrancyGuard, Ownable {
     // public constant TOTAL_SUPPLY = ;
+
+    // TODO: figure out what we want maxSupply to be.
+    uint256 public constant maxSupply = 10000;
+
+    // royaltiesPercentage by default is 10%.
+    uint256 public royaltiesPercentage = 10;
 
     // Mapping from token ID to RGB value
     mapping(uint256 => uint8) public tokenIdValues;
@@ -14,11 +21,12 @@ contract Grid is ERC721, ReentrancyGuard, Ownable {
     // Mapping from token ID to current price
     mapping(uint256 => uint256) public prices;
 
-    constructor(uint256 _maxSupply) ERC721("Grid", "GRD") {}
+    constructor(uint256 _maxSupply) ERC721("Grid", "GRD") {
+    }
 
     modifier mintCompliance(uint256 _mintAmount) {
         require(_mintAmount > 0, 'Invalid mint amount!');
-        require(totalSupply() + _mintAmount <= maxSupply, 'Max supply exceeded!');
+        require(super.totalSupply() + _mintAmount <= maxSupply, 'Max supply exceeded!');
         _;
     }
 
@@ -27,6 +35,10 @@ contract Grid is ERC721, ReentrancyGuard, Ownable {
             _safeMint(_msgSender(), _mintAmount);
         }
     }
+    // getter functions for mapping(s)
+
+    // token uri should return rgb
+
 
     function batchTransferFrom(uint256[] tokenIds) external payable {
         // Finds the total price associated with the token IDs
@@ -49,6 +61,9 @@ contract Grid is ERC721, ReentrancyGuard, Ownable {
 
     // royalties
     // -royaltyinfo + setroyaltyies + supportsinterface (erc-2981)
+    function supportsInterface(bytes4 interfaceId) public view override(ERC721, IERC2981) returns (bool) {
+        return super.supportsInterface(interfaceId);
+    }
 
 
     /**
@@ -57,8 +72,17 @@ contract Grid is ERC721, ReentrancyGuard, Ownable {
      */
     function tokenURI(uint256 tokenId) public view override returns (string memory) {
         return _exists(tokenId) ? (tokenIdValues[tokenId]).toString() : "255";
+        
+    // set a new royalty percentage
+    function setRoyaltiesPercentage(uint256 newPercentage) public onlyOwner {
+        royaltiesPercentage = newPercentage;
     }
 
+    function royaltyInfo(uint256 tokenId, uint256 _salePrice) external view override(IERC2981) returns(address receiver, uint256 royaltyAmount) {
+        uint256 _royalties = ((_salePrice * royaltiesPercentage) / 100);
+        return (owner(), _royalties);
+    }
+    
     // withdraw function
     function withdraw() public onlyOwner {
         require(address(this).balance > 0, "Balance is 0");
