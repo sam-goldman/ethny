@@ -7,10 +7,14 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/interfaces/IERC2981.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
 
+// TODO: royalty receiver can change its own address?
+
 contract Grid is ERC721, IERC2981, ReentrancyGuard, Ownable {
-    uint256 public constant MAX_SUPPLY = 10000;
+    uint256 public immutable MAX_SUPPLY;
 
     uint256 public counter;
+
+    address payable royaltyReceiver;
 
     // royaltiesPercentage by default is 10%.
     uint256 public royaltiesPercentage = 10;
@@ -21,23 +25,21 @@ contract Grid is ERC721, IERC2981, ReentrancyGuard, Ownable {
     // Mapping from token ID to current price
     mapping(uint256 => uint256) public prices;
 
-    constructor() ERC721("Grid", "GRD") {}
-
-    modifier mintCompliance(uint256 _mintAmount) {
-        require(_mintAmount > 0, "Invalid mint amount!");
-        require(counter + _mintAmount <= MAX_SUPPLY, "Max supply exceeded!");
-        _;
+    constructor(uint256 _maxSupply) ERC721("Grid", "GRD") {
+        MAX_SUPPLY = _maxSupply;
     }
 
     function batchMint(uint256[] memory tokenIds)
         public
         payable
         nonReentrant
-        mintCompliance(tokenIds.length)
     {
-        for (uint256 i = 0; i <= tokenIds.length; ++i) {
-            uint256 tokenId = tokenIds[i];
+        require(tokenIds.length > 0, "Cannot mint zero NFTs");
+        require(counter + tokenIds.length <= MAX_SUPPLY, "Max supply exceeded");
+
+        for (uint256 i = 0; i < tokenIds.length; i++) {
             counter += 1;
+            uint256 tokenId = tokenIds[i];
             _safeMint(_msgSender(), tokenId);
         }
 
