@@ -7,25 +7,22 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/interfaces/IERC2981.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
 
-// TODO: royalty receiver can change its own address?
-
 contract Grid is ERC721, IERC2981, ReentrancyGuard, Ownable {
+    uint16 public constant BASIS_POINTS = 10000;
     uint256 public immutable MAX_SUPPLY;
-    uint8 public constant BASIS_POINTS = 10000;
 
     uint256 public counter;
-
-    address payable royaltyReceiver;
-
+    
     // royaltiesPercentage by default is 5%.
     uint256 public royaltiesPercentage = 500; // 500 bps
 
-    // Mapping from token ID to RGB value
-    mapping(uint256 => uint8) public tokenIdValues;
+    // Mapping from token ID to RGB value in hex format
+    mapping(uint256 => bytes6) public tokenIdValues;
 
     // Mapping from token ID to current price
     mapping(uint256 => uint256) public prices;
 
+    // TODO: change name?
     constructor(uint256 _maxSupply) ERC721("Grid", "GRD") {
         MAX_SUPPLY = _maxSupply;
     }
@@ -38,16 +35,13 @@ contract Grid is ERC721, IERC2981, ReentrancyGuard, Ownable {
         require(tokenIds.length > 0, "Cannot mint zero NFTs");
         require(counter + tokenIds.length <= MAX_SUPPLY, "Max supply exceeded");
 
+        uint256 amountPerTokenId = msg.value / tokenIds.length;
         for (uint256 i = 0; i < tokenIds.length; i++) {
             counter += 1;
             uint256 tokenId = tokenIds[i];
             _safeMint(_msgSender(), tokenId);
-        }
 
-        if (msg.value > 0) {
-            uint256 amountPerTokenId = msg.value / tokenIds.length;
-            for (uint256 i = 0; i < tokenIds.length; i++) {
-                uint256 tokenId = tokenIds[i];
+            if (msg.value > 0) {
                 prices[tokenId] += amountPerTokenId;
             }
         }
@@ -66,11 +60,12 @@ contract Grid is ERC721, IERC2981, ReentrancyGuard, Ownable {
         // Increments the price of each token ID and transfers tokens to new owner
         uint256 amountPerTokenId = msg.value / tokenIds.length;
         for (uint i = 0; i < tokenIds.length; i++) {
-            // Pays the current owner their portion of the transaction.
             uint256 tokenId = tokenIds[i];
             address prevOwner = _owners[tokenId];
-            uint256 prevOwnerPayment = (10000 - )
-            (bool success, ) = payable(prevOwner).call{value: remainingMsgValue}("");
+            
+            // Pays the previous owner their portion of the transaction.
+            uint256 prevOwnerPayment = (BASIS_POINTS - royaltiesPercentage) * amountPerTokenId / BASIS_POINTS;
+            (bool success, ) = payable(prevOwner).call{value: prevOwnerPayment}("");
             require(success, "Failed to pay previous owner.");
 
             // Transfers token to the new owner
@@ -100,11 +95,11 @@ contract Grid is ERC721, IERC2981, ReentrancyGuard, Ownable {
         override
         returns (string memory)
     {
-        return
-            _exists(tokenId) ? Strings.toString(tokenIdValues[tokenId]) : "255";
+        // TODO: is this necessary?
+        return _exists(tokenId) ? Strings.toHexString(uint48(tokenIdValues[tokenId])) : 'FFFFFF';
     }
 
-    function setTokenIdValues(uint256[] memory tokenIds, uint8[] memory values) external {
+    function setTokenIdValues(uint256[] memory tokenIds, bytes6[] memory values) external {
         require(tokenIds.length == values.length, "Array lengths differ");
         
         for (uint i = 0; i < tokenIds.length; i++) {
