@@ -8,6 +8,7 @@ const BASIS_POINTS = 10_000;
 
 describe('Grid', () => {
     let tokenIds = [1, 2, 3, 4, 9999]
+    let hexCodes = ['0000FF', '000000', '89CFF0', 'b0c4de', 'FFFFFF']
     let price = ethers.utils.parseEther('1')
 
     let alice, bob
@@ -130,12 +131,24 @@ describe('Grid', () => {
         })
     })
 
-    describe('tokenURI', async () => {
+    describe.only('tokenURI', async () => {
         it('returns the white hex value for a non-existent token', async () => {
+            const tokenId = 888
+
+            // Check that the token does not exist
+            await expect(Grid.ownerOf(tokenId)).to.be.revertedWith("ERC721: owner query for nonexistent token")
             
+            expect(await Grid.tokenURI(tokenId)).to.equal('FFFFFF')
         })
 
-        it('returns the string representation of an arbitrary hex value')
+        it('returns the string representation of arbitrary hex codes', async () => {            
+            // Set the hex value for Alice's tokens
+            await Grid.setTokenIdValues(tokenIds, hexCodes)
+
+            for (const tokenId of tokenIds) {
+                expect(await Grid.tokenURI(tokenId)).to.equal
+            }
+        })
     })
 
     describe('setTokenIdValues', async () => {
