@@ -12,10 +12,11 @@ export default function Home() {
   const contractABI = abi.abi;
   const contractAddress = "0x0789965e9E6617F4375B0f787038fbA4c3059c04";
   useEffect(() => {
+    console.log('EFFECT USED')
     //@TODO: call rgb value per plot/ values per plot
     loadPlots();
     checkPlots();
-  });
+  }, []);
   const [color, setColor] = useState("#fff");
   const [plotsPurchase, setPlotsPurchase] = useState([])
   const [contract, setContract] = useState()
@@ -25,38 +26,37 @@ export default function Home() {
     console.log(color)
   };
 
-  const loadPlots = () => {
+  const loadPlots = async () => {
     try {
       const { ethereum } = window;
       if (ethereum) {
         const provider = new ethers.providers.Web3Provider(ethereum);
-        const signer = provider.getSigner();
+        const signer = await provider.getSigner();
         const contract = new ethers.Contract(contractAddress, contractABI, signer);
 
         for (var i = 0; i < 100; i++) {
-          const loadColor = await contract.tokenIdValues(i);
+          if (plotsPurchase.includes(i)) {
+            plots.push( <div key={i} class="box-content h-20 w-20 border-2 bg-gray-300"/>)
+          } else {
+            const hexCode = await contract.tokenURI(i);
+            const style = `box-content h-20 w-20 border-2 bg-[#${hexCode.substring(2)}] cursor-pointer`
+            plots.push(
+              <div key={i}
+                class={style}
+                onClick={() => {
+                    setPlotsPurchase(prevPlots => [...prevPlots, i]);
+                  }
+                }>
+              </div>
+            )
+          }
+          console.log(plots)
         }
-        console.log("Mining...", purchase.hash);
-
-        await purchase.wait();
-        console.log("Mined -- ", purchase.hash);
-
       } else {
         console.log("Ethereum object doesn't exist!");
       }
     } catch (error) {
       console.log(error);
-    }
-    for (var i = 0; i < 100; i++) {
-      if(plotsPurchase.includes(i)){
-        plots.push( <div key={i} class="box-content h-20 w-20 border-2 bg-gray-300"/>)
-      } 
-      else {plots.push( <div key={i} class="box-content h-20 w-20 border-2 hover:bg-gray-300 cursor-pointer" onClick={() => {
-        setPlotsPurchase(prevPlots => [...prevPlots, i]);
-        console.log(plotsPurchase);
-      }}></div>)
-      }
-       // TODO render rgb value per plot
     }
   }
 
@@ -64,35 +64,35 @@ export default function Home() {
 
   }
 
-  for (var i = 0; i < 100; i++) {
-    if(plotsPurchase.includes(i)){
-      <div key={i} class="box-content h-20 w-20 border-2 bg-gray-300"/>
-    }
-    plots.push( <div key={i} class="box-content h-20 w-20 border-2 hover:bg-gray-300 cursor-pointer" onClick={() => {
-      setPlotsPurchase(prevPlots => [...prevPlots, i]);
-      console.log(plotsPurchase);
-    }}></div>); // TODO render rgb value per plot
-  }
+  // for (var i = 0; i < 100; i++) {
+  //   if(plotsPurchase.includes(i)){
+  //     <div key={i} class="box-content h-20 w-20 border-2 bg-gray-300"/>
+  //   }
+  //   plots.push( <div key={i} class="box-content h-20 w-20 border-2 hover:bg-gray-300 cursor-pointer" onClick={() => {
+  //     setPlotsPurchase(prevPlots => [...prevPlots, i]);
+  //     console.log(plotsPurchase);
+  //   }}></div>); // TODO render rgb value per plot
+  // }
 
-  const purchase = async() => {
-    try {
-      const { ethereum } = window;
-      if (ethereum) {
-        const provider = new ethers.providers.Web3Provider(ethereum);
-        const signer = await provider.getSigner();
+  const purchase = async () => {
+    // try {
+    //   const { ethereum } = window;
+    //   if (ethereum) {
+    //     const provider = new ethers.providers.Web3Provider(ethereum);
+    //     const signer = await provider.getSigner();
 
-        const purchase = await contract.batchMint(plotsPurchase);
-        console.log("Mining...", purchase.hash);
+    //     const purchase = await contract.batchMint(plotsPurchase);
+    //     console.log("Mining...", purchase.hash);
 
-        await purchase.wait();
-        console.log("Mined -- ", purchase.hash);
+    //     await purchase.wait();
+    //     console.log("Mined -- ", purchase.hash);
 
-      } else {
-        console.log("Ethereum object doesn't exist!");
-      }
-    } catch (error) {
-      console.log(error);
-    }
+    //   } else {
+    //     console.log("Ethereum object doesn't exist!");
+    //   }
+    // } catch (error) {
+    //   console.log(error);
+    // }
   }
 
 
