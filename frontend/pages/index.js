@@ -34,7 +34,7 @@ export default function Home() {
         const signer = await provider.getSigner();
         const contract = new ethers.Contract(contractAddress, contractABI, signer);
 
-        for (var i = 0; i < 100; i++) {
+        for (var i = 0; i < 9; i++) {
           if (plotsPurchase.includes(i)) {
             plots.push( <div key={i} class="box-content h-20 w-20 border-2 bg-gray-300"/>)
           } else {
