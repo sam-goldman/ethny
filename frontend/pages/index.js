@@ -8,15 +8,14 @@ import { ethers, utils } from "ethers"
 import abi from "../utils/Grid.json"
 
 export default function Home() {
-  var plots = [];
   const contractABI = abi.abi;
   const contractAddress = "0x0789965e9E6617F4375B0f787038fbA4c3059c04";
   useEffect(() => {
-    console.log('EFFECT USED')
     //@TODO: call rgb value per plot/ values per plot
     loadPlots();
     checkPlots();
   }, []);
+  const [plots, setPlots] = useState([])
   const [color, setColor] = useState("#fff");
   const [plotsPurchase, setPlotsPurchase] = useState([])
   const [contract, setContract] = useState()
@@ -30,28 +29,32 @@ export default function Home() {
     try {
       const { ethereum } = window;
       if (ethereum) {
+        let newPlots = []
         const provider = new ethers.providers.Web3Provider(ethereum);
         const signer = await provider.getSigner();
         const contract = new ethers.Contract(contractAddress, contractABI, signer);
 
-        for (var i = 0; i < 9; i++) {
+        for (var i = 0; i < 10; i++) {
           if (plotsPurchase.includes(i)) {
-            plots.push( <div key={i} class="box-content h-20 w-20 border-2 bg-gray-300"/>)
+            newPlots.push( <div key={i} class="box-content h-20 w-20 border-2 bg-gray-300"/>)
           } else {
             const hexCode = await contract.tokenURI(i);
             const style = `box-content h-20 w-20 border-2 bg-[#${hexCode.substring(2)}] cursor-pointer`
-            plots.push(
+            newPlots.push(
               <div key={i}
                 class={style}
                 onClick={() => {
-                    setPlotsPurchase(prevPlots => [...prevPlots, i]);
+                    setPlotsPurchase(prevPlots => {
+                      [...prevPlots, i]
+                    })
+                    console.log(plotsPurchase);
                   }
                 }>
               </div>
             )
           }
-          console.log(plots)
         }
+        setPlots(newPlots)
       } else {
         console.log("Ethereum object doesn't exist!");
       }
